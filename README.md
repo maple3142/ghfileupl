@@ -15,6 +15,8 @@ npm i -g ghfileupl
 gupl ./testimg.png
 ```
 
+![step](https://user-images.githubusercontent.com/9370547/48206784-10ee7600-e367-11e8-9dd6-6250843eb981.jpg)
+
 When you use this at the first time, it will ask you to login GitHub account with account and password.
 
 I suggest you to register another alt account when using this tool.
