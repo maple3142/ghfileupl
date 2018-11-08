@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const login = require('./login')
 const prompts = require('prompts')
 const qs = require('querystring')
@@ -11,7 +12,7 @@ const path = require('path')
 
 const REPOURL = 'https://github.com/isaacs/github/issues/new'
 const COOKIEFILE = path.join(__dirname, 'cookie.json')
-const FILEPATH = path.join(__dirname, process.argv[2])
+const FILEPATH = path.join(process.cwd(), process.argv[2])
 
 const readCookie = async () => {
 	if (await fs.exists(COOKIEFILE)) {
