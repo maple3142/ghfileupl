@@ -1,6 +1,6 @@
 {
 	"name": "ghfileupl",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"author": "maple3142",
 	"main": "index.js",
 	"bin": {
