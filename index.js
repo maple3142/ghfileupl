@@ -10,9 +10,22 @@ const cheerio = require('cheerio')
 const fs = require('fs-extra')
 const path = require('path')
 
+if (process.argv.length < 3) {
+	console.error(`Usage: gupl <filepath>`)
+	process.exit(1)
+}
+
+const ALLOWED_FILETYPES = ['gif', 'jpg', 'jpeg', 'png', 'docx', 'gz', 'log', 'pdf', 'pptx', 'txt', 'xlsx', 'zip']
 const REPOURL = 'https://github.com/isaacs/github/issues/new'
 const COOKIEFILE = path.join(__dirname, 'cookie.json')
 const FILEPATH = path.join(process.cwd(), process.argv[2])
+
+const isFileAllowed = ALLOWED_FILETYPES.some(ext => FILEPATH.toLowerCase().endsWith(ext))
+if (!isFileAllowed) {
+	console.log('Your file is not allowed to upload to GitHub.')
+	console.log(`Only ${ALLOWED_FILETYPES.join(', ')} are allowed.`)
+	process.exit(1)
+}
 
 const readCookie = async () => {
 	if (await fs.exists(COOKIEFILE)) {
@@ -36,18 +49,20 @@ const readCookie = async () => {
 		{
 			type: 'confirm',
 			name: 'has2fa',
-			message: 'Do you have 2fa?'
+			message: 'Do you have 2fa enabled?'
 		},
 		{
 			type: has2fa => (has2fa ? 'text' : null),
 			name: 'otp',
-			message: 'Please tell me your current otp code.',
-			validate: v => !!v
+			message: 'Please enter current otp here:',
+			validate: v => !!v && /^\d{6}$/.test(v)
 		}
 	]
 	const r = await prompts(questions)
 	const cookie = await login(r.username, r.password, r.otp)
 	await fs.writeFile(COOKIEFILE, JSON.stringify(cookie.toJSON()))
+	console.log(`Your GitHub login credentials(cookies) have been saved to "${COOKIEFILE}".`)
+	console.log('To delete it, you can execute "gupl-reset" or "ghfileupl-reset".')
 	return cookie
 }
 ;(async () => {

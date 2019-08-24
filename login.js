@@ -41,6 +41,9 @@ module.exports = async (acc, pwd, otp) => {
 		return cookieJar
 	} else if (resp.headers.location === 'https://github.com/sessions/two-factor') {
 		// 2fa
+		if (!otp) {
+			throw new Error('2fa otp code is required but not given!')
+		}
 		const $fa = await client.get('https://github.com/sessions/two-factor').then(r => cheerio.load(r.body))
 		const authenticity_token2 = $fa('input[name=authenticity_token]').attr('value')
 		const resp2 = await client.post('https://github.com/sessions/two-factor', {

@@ -4,7 +4,10 @@
 	"author": "maple3142",
 	"main": "index.js",
 	"bin": {
-		"gupl": "./index.js"
+		"gupl": "./index.js",
+		"ghfileupl": "./index.js",
+		"gupl-reset": "./reset.js",
+		"ghfileupl-reset": "./reset.js"
 	},
 	"license": "MIT",
 	"dependencies": {
