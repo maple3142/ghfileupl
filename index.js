@@ -89,7 +89,7 @@ const readCookie = async () => {
 					name: path.basename(FILEPATH),
 					size: stat.size,
 					content_type: mime.lookup(FILEPATH),
-					authenticity_token: $('.js-upload-markdown-image').data('upload-policy-authenticity-token'),
+					authenticity_token: $('.js-upload-markdown-image').children('input[type=hidden]').attr("value"),
 					repository_id: parseInt($('meta[name="octolytics-dimension-repository_id"]').attr('content'))
 				}
 			})
