@@ -39,7 +39,7 @@ module.exports = async (acc, pwd, otp) => {
 	} else if (resp.headers.location === 'https://github.com/') {
 		//success
 		return cookieJar
-	} else if (resp.headers.location === 'https://github.com/sessions/two-factor') {
+	} else if (resp.headers.location.includes('/sessions/two-factor')) {
 		// 2fa
 		if (!otp) {
 			throw new Error('2fa otp code is required but not given!')

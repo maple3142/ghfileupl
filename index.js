@@ -16,9 +16,9 @@ if (process.argv.length < 3) {
 }
 
 const ALLOWED_FILETYPES = ['gif', 'jpg', 'jpeg', 'png', 'docx', 'gz', 'log', 'pdf', 'pptx', 'txt', 'xlsx', 'zip']
-const REPOURL = 'https://github.com/isaacs/github/issues/new'
+const REPOURL = 'https://github.com/github/feedback/discussions/new'
 const COOKIEFILE = path.join(__dirname, 'cookie.json')
-const FILEPATH = path.join(process.cwd(), process.argv[2])
+const FILEPATH = path.resolve(process.argv[2])
 
 const isFileAllowed = ALLOWED_FILETYPES.some(ext => FILEPATH.toLowerCase().endsWith(ext))
 if (!isFileAllowed) {
@@ -72,7 +72,6 @@ const readCookie = async () => {
 		followRedirect: false,
 		hooks: {
 			beforeRequest: opts => {
-				//console.log(opts)
 				if (opts.form) {
 					opts.body = qs.stringify(opts.form)
 					opts.headers['Content-Length'] = opts.body.length
@@ -89,7 +88,7 @@ const readCookie = async () => {
 					name: path.basename(FILEPATH),
 					size: stat.size,
 					content_type: mime.lookup(FILEPATH),
-					authenticity_token: $('.js-upload-markdown-image').children('input[type=hidden]').attr("value"),
+					authenticity_token: $('.js-upload-markdown-image').children('input[type=hidden]').attr('value'),
 					repository_id: parseInt($('meta[name="octolytics-dimension-repository_id"]').attr('content'))
 				}
 			})
@@ -108,7 +107,7 @@ const readCookie = async () => {
 		const result = await client
 			.put('https://github.com' + res.asset_upload_url, { headers: { Accept: 'application/json' }, body: fd2 })
 			.then(r => JSON.parse(r.body))
-		console.log(result)
+		console.log(JSON.stringify(result, null, 2))
 	} catch (e) {
 		if (e.errors) {
 			console.error(e.errors)
