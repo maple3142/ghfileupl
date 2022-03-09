@@ -9,18 +9,20 @@ const FormData = require('form-data')
 const cheerio = require('cheerio')
 const fs = require('fs-extra')
 const path = require('path')
+const Conf = require('conf')
 
 if (process.argv.length < 3) {
 	console.error(`Usage: gupl <filepath>`)
 	process.exit(1)
 }
 
-const ALLOWED_FILETYPES = ['gif', 'jpg', 'jpeg', 'png', 'docx', 'gz', 'log', 'pdf', 'pptx', 'txt', 'xlsx', 'zip']
+const ALLOWED_FILETYPES = ['.gif', '.jpg', '.jpeg', '.png', '.docx', '.gz', '.log', '.pdf', '.pptx', '.txt', '.xlsx', '.zip']
 const REPOURL = 'https://github.com/github/feedback/discussions/new'
-const COOKIEFILE = path.join(__dirname, 'cookie.json')
+const config = new Conf()
 const FILEPATH = path.resolve(process.argv[2])
+const fileext = path.extname(FILEPATH)
 
-const isFileAllowed = ALLOWED_FILETYPES.some(ext => FILEPATH.toLowerCase().endsWith(ext))
+const isFileAllowed = ALLOWED_FILETYPES.includes(fileext)
 if (!isFileAllowed) {
 	console.log('Your file is not allowed to upload to GitHub.')
 	console.log(`Only ${ALLOWED_FILETYPES.join(', ')} are allowed.`)
@@ -28,9 +30,8 @@ if (!isFileAllowed) {
 }
 
 const readCookie = async () => {
-	if (await fs.exists(COOKIEFILE)) {
-		// if cookie already exists
-		return CookieJar.fromJSON(await fs.readFile(COOKIEFILE, 'utf-8'))
+	if (config.has('session')) {
+		return CookieJar.fromJSON(config.get('session'))
 	}
 
 	const questions = [
@@ -60,8 +61,8 @@ const readCookie = async () => {
 	]
 	const r = await prompts(questions)
 	const cookie = await login(r.username, r.password, r.otp)
-	await fs.writeFile(COOKIEFILE, JSON.stringify(cookie.toJSON()))
-	console.log(`Your GitHub login credentials(cookies) have been saved to "${COOKIEFILE}".`)
+	config.set('session', cookie)
+	console.log(`Your GitHub login credentials(cookies) have been saved to ${config.path}.`)
 	console.log('To delete it, you can execute "gupl-reset" or "ghfileupl-reset".')
 	return cookie
 }
